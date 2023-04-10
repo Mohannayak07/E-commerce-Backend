@@ -37,6 +37,20 @@ mongoclient.connect('mongodb://localhost:27017', (err, client) => {
                 }
             });
     })
+    app.put('/updatestatus',(req,res)=>{
+        // console.log(req.body)
+        const orderid=req.body.orderid
+        const status=req.body.status
+        db.collection("orders").updateOne({'orderid':orderid},{$set:{'status':status}},function(err,result){
+            if(!err){
+                res.send('success')
+            }
+            else{
+                res.send('error')
+            }
+        })
+        
+    })
 
     app.post('/placeorder', (req, res) => {
         console.log(req.body);
@@ -46,6 +60,8 @@ mongoclient.connect('mongodb://localhost:27017', (err, client) => {
             "quantityarray":req.body.quantityarray,
             "email":req.body.email,
             "price":req.body.price,
+            "orderid":req.body.orderId,
+            "status":"Placed Order"
             
         } 
         
