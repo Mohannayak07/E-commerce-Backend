@@ -25,6 +25,7 @@ mongoclient.connect('mongodb://localhost:27017', (err, client) => {
         res.send("GET Request Called")
     })
 
+    //get orders details
     app.get('/orders',(req,res)=>{
         
             db.collection("orders").find({}).toArray((err, result) => {
@@ -37,11 +38,29 @@ mongoclient.connect('mongodb://localhost:27017', (err, client) => {
                 }
             });
     })
+
+    //order by email id
+    app.get('/orders/:email',(req,res)=>{
+        const emailid=req.params.email
+        db.collection("orders").find({'email':emailid}).toArray((err, result) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                res.send(result);
+                
+            }
+        });
+})
+
+
     app.put('/updatestatus',(req,res)=>{
         // console.log(req.body)
         const orderid=req.body.orderid
         const status=req.body.status
-        db.collection("orders").updateOne({'orderid':orderid},{$set:{'status':status}},function(err,result){
+        var datetime = new Date();
+        const upddate=datetime.toISOString().slice(0,10)
+        db.collection("orders").updateOne({'orderid':orderid},{$set:{'status':status,'statusDate':upddate}},function(err,result){
             if(!err){
                 res.send('success')
             }
@@ -61,7 +80,8 @@ mongoclient.connect('mongodb://localhost:27017', (err, client) => {
             "email":req.body.email,
             "price":req.body.price,
             "orderid":req.body.orderId,
-            "status":"Placed Order"
+            "status":"Order Placed",
+            "statusDate":req.body.statusDate
             
         } 
         
